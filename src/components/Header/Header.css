@@ -1,0 +1,22 @@
+.header {
+    padding: 18px 70px;
+    background-color: #073042;
+    min-height: 38px;
+}
+
+@media screen and (max-width: 1023px) {
+    .header{
+        padding: 18px 30px;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    .header{
+        padding: 18px 14px;
+    }
+}
+
+.header__logo {
+    height: 38px;
+    width: 38px;
+}
