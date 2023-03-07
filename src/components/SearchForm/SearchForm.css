@@ -102,12 +102,12 @@
 
 @media screen and (max-width: 767px) {
     .search {
-        padding: 90px 14px 50px;
+        padding: 84px 14px 50px;
     }
 
     .search__container {
         margin-bottom: 40px;
-        padding-bottom: 15px;
+        padding-bottom: 9px;
     }
     
     .search__input {
@@ -115,7 +115,7 @@
         line-height: 22px;
     }
 
-    .search__checkbox-container{
+    .search__checkbox-container {
         justify-content: center;
     }
 
