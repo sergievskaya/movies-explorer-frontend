@@ -5,6 +5,7 @@ import Main from '../Main/Main';
 import Footer from '../Footer/Footer';
 import { Route, Switch } from 'react-router-dom';
 import Movies from '../Movies/Movies';
+import SavedMovies from '../SavedMovies/SavedMovies';
 
 function App() {
   return (
@@ -18,6 +19,10 @@ function App() {
 
         <Route path="/movies">
           <Movies />
+        </Route>
+
+        <Route path="/saved-movies">
+          <SavedMovies />
         </Route>
       </Switch>
       
