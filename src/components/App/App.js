@@ -9,6 +9,7 @@ import SavedMovies from '../SavedMovies/SavedMovies';
 import PageNotFound from '../PageNotFound/PageNotFound';
 import Register from '../Register/Register';
 import Login from '../Login/Login';
+import Profile from '../Profile/Profile';
 
 function App() {
 
@@ -16,7 +17,7 @@ function App() {
 
   return (
     <div className="page">
-      {pathname === '/' || pathname === '/movies' || pathname === '/saved-movies' ? <Header /> : <></>}
+      {pathname === '/' || pathname === '/movies' || pathname === '/saved-movies' || pathname === '/profile' ? <Header /> : <></>}
 
       <Switch>
         <Route exact path="/">
@@ -37,6 +38,10 @@ function App() {
 
         <Route path="/signin">
           <Login />
+        </Route>
+
+        <Route path="/profile">
+          <Profile />
         </Route>
 
         <Route path="*">

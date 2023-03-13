@@ -19,7 +19,7 @@ function Register() {
                 </div>
                 <div className= "form__field">
                     <label className="form__label">E-mail</label>
-                    <input className="form__input" type="text" required />
+                    <input className="form__input" type="email" required />
                     <span className="form__input-error"></span>
                 </div>
                 <div className= "form__field">
