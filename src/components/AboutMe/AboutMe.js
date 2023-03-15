@@ -18,14 +18,14 @@ function AboutMe() {
                     </p>
                     <ul className="about-me__links">
                         <li>
-                            <a className="about-me__link" href="#about-project">Github</a>
+                            <a className="about-me__link" href="https://github.com/sergievskaya" target="_blank" rel="noreferrer">Github</a>
                         </li>
                         <li>
-                            <a className="about-me__link" href="#about-project">Telegram</a>
+                            <a className="about-me__link" href="https://t.me/fllow_ks" target="_blank" rel="noreferrer">Telegram</a>
                         </li>
                     </ul>
                 </div>
-                <img className="about-me__photo" src={studentPhoto} alt="Фотография студента" />
+                <img className="about-me__photo" src={studentPhoto} alt="Фотография студента"/>
             </div>
         </section>
     );
