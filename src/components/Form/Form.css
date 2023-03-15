@@ -71,6 +71,10 @@
     outline: none;
 }
 
+.form__input_color-error {
+    color: #EE3465;
+}
+
 .form__input-error {
     color: #EE3465;
     font-weight: 400;
