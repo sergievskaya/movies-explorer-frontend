@@ -16,7 +16,7 @@ function App() {
   const { pathname } = useLocation();
 
   return (
-    <div className="page">
+    <div className="App">
       {pathname === '/' || pathname === '/movies' || pathname === '/saved-movies' || pathname === '/profile' ? <Header /> : <></>}
 
       <Switch>
