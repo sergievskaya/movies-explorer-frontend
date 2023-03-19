@@ -120,6 +120,7 @@
     .about-me__container {
         flex-direction: column-reverse;
         margin-top: 60px;
+        align-items: center;
     }
 
     .about-me__name {
