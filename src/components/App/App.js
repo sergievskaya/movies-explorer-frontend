@@ -25,7 +25,7 @@ function App() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [moviesError, setMoviesError] = useState('');
-  const [SavedMoviesError, setSavedMoviesError] = useState(false);
+  const [savedMoviesError, setSavedMoviesError] = useState(false);
 
   const [foundMovies, setFoundMovies] = useState([]);
   const [requestText, setRequesText] = useState('');
@@ -37,14 +37,14 @@ function App() {
   useEffect(() => {
     if(loggedIn) {
       Promise.all([mainApi.getUserInfo(), mainApi.getSavedMovies()])
-      .then(([userData, movies]) => {
-          setCurrentUser(userData);
-          setSavedMovies(movies);
-          setFoundSavedMovies(movies);
-      })
-      .catch((err) => {
-          console.log(err);
-      });
+        .then(([userData, movies]) => {
+            setCurrentUser(userData);
+            setSavedMovies(movies);
+            setFoundSavedMovies(movies);
+        })
+        .catch((err) => {
+            console.log(err);
+        });
     }   
   }, [loggedIn]);
 
@@ -188,6 +188,10 @@ function App() {
       })
   }
 
+  function initialFilterMovies() {
+    setFoundSavedMovies(savedMovies);
+  }
+
   //проверить сохранён ли фильм
   function isSaved(card) {
     return savedMovies.find(item => item.movieId === card.id);
@@ -224,10 +228,11 @@ function App() {
             loggedIn={loggedIn}
             cards={foundSavedMovies}
             isLoading={isLoading}
-            error={SavedMoviesError}
+            error={savedMoviesError}
             handleCardDelete={handleCardDelete}
             isSaved={isSaved}
             handleSearchMovie={handleSearchSavedMovie}
+            initialFilterMovies={initialFilterMovies}
           />
 
           <ProtectedRoute 
