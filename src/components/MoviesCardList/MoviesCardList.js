@@ -4,7 +4,7 @@ import MoviesCard from "../MoviesCard/MoviesCard";
 import './MoviesCardList.css';
 import { useLocation } from "react-router-dom";
 
-function MoviesCardList({ cards, isLoading, serverError, handleCardSave, handleCardDelete, isSaved }) {
+function MoviesCardList({ cards, isLoading, error, handleCardSave, handleCardDelete, isSaved }) {
 
     const { pathname } = useLocation();
 
@@ -12,8 +12,8 @@ function MoviesCardList({ cards, isLoading, serverError, handleCardSave, handleC
 
     return (
         <section className="cards">
-            {serverError ? (
-                <span className="cards__error-text">{serverError}</span>
+            {error ? (
+                <span className="cards__error-text">{error}</span>
             ) : (
                 <ul className="cards__list">
                     {cards.map((card) => (  

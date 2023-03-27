@@ -1,47 +1,85 @@
 class MainApi {
     constructor(options) {
         this._baseUrl = options.baseUrl;
-        this._headers = options.headers;
     }
 
     _checkResponse(res) {
         if(res.ok) {
             return res.json();
         } else {
-            return Promise.reject(`Oшибка: ${res.status}`);
+            return Promise.reject(`Oшибка: ${res.status} ${res.statusText}`);
         }
     }
 
-    getUserInfo() {
-        return fetch(`${this._baseUrl}/users/me`, {
-            headers: this._headers
+    authorize(email, password) {
+        return fetch(`${this._baseUrl}/signin`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({email, password})
         })
             .then(this._checkResponse);
     }
 
-    updateUserInfo(name, email) {
-        return fetch(`${this._baseUrl}/users/me`, {
-            method: 'PATCH',
-            headers: this._headers,
+    register(data) {
+        return fetch(`${this._baseUrl}/signup`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
             body: JSON.stringify({
-                name,
-                email
+                email: data.email,
+                password: data.password,
+                name: data.name
             })
         })
             .then(this._checkResponse);
     }
 
+    getUserInfo() {
+        const token = localStorage.getItem('jwt');
+        return fetch(`${this._baseUrl}/users/me`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(this._checkResponse);
+    }
+
+    updateUserInfo(name, email) {
+        const token = localStorage.getItem('jwt');
+        return fetch(`${this._baseUrl}/users/me`, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({name, email})
+        })
+            .then(this._checkResponse);
+    }
+
     getSavedMovies(){
+        const token = localStorage.getItem('jwt');
         return fetch(`${this._baseUrl}/movies`, {
-            headers: this._headers
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
         })
             .then(this._checkResponse);
     }
 
     addMovie(movie) {
+        const token = localStorage.getItem('jwt');
         return fetch(`${this._baseUrl}/movies`, {
             method: 'POST',
-            headers: this._headers,
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
             body: JSON.stringify({
                 country: movie.country,
                 director: movie.director,
@@ -60,9 +98,13 @@ class MainApi {
     }
 
     deleteMovie(movie) {
+        const token = localStorage.getItem('jwt');
         return fetch(`${this._baseUrl}/movies/${movie._id}`, {
             method: 'DELETE',
-            headers: this._headers
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
         })
             .then(this._checkResponse);
     }
@@ -70,11 +112,7 @@ class MainApi {
 }
 
 const mainApi = new MainApi({
-    baseUrl: 'https://api.movies.sergievskaya.nomoredomains.work',
-    headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDFiMjU4OTlmNjcxYzhjMzcwOTdjNTMiLCJpYXQiOjE2Nzk1MDA3MTQsImV4cCI6MTY4MDEwNTUxNH0.6MtRM1M33tiJj-4hiUZ34CYWflMw-obgP8phs75z_GY',
-    }
+    baseUrl: 'https://api.movies.sergievskaya.nomoredomains.work'
 });
 
 export default mainApi;

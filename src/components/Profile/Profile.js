@@ -1,8 +1,9 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { Redirect } from "react-router-dom";
 import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 import './Profile.css';
 
-function Profile({ handleUpdateUser }) {
+function Profile({ handleUpdateUser, handleSignOut, loggedIn }) {
 
     const currentUser = useContext(CurrentUserContext);
 
@@ -32,6 +33,10 @@ function Profile({ handleUpdateUser }) {
     function handleSubmit(evt) {
         evt.preventDefault();
         handleUpdateUser(name, email);
+    }
+
+    if (!loggedIn) {
+        return <Redirect to="/"/>
     }
 
     return (
@@ -71,7 +76,7 @@ function Profile({ handleUpdateUser }) {
                 ) : (
                     <>
                         <button className="profile__button profile__button_type_edit" type="button" onClick={handleEditClick}>Редактировать</button>
-                        <button className="profile__button profile__button_type_logout" type="button">Выйти из аккаунта</button>
+                        <button className="profile__button profile__button_type_logout" type="button" onClick={handleSignOut}>Выйти из аккаунта</button>
                     </>
                 )}
                 

@@ -2,7 +2,7 @@ import MoviesCardList from "../MoviesCardList/MoviesCardList";
 import SearchForm from "../SearchForm/SearchForm";
 import './SavedMovies.css';
 
-function SavedMovies({ cards, isLoading, serverError, handleCardDelete, isSaved, handleSearchMovie }) {
+function SavedMovies({ cards, isLoading, handleCardDelete, isSaved, error, handleSearchMovie }) {
 
     return (
         <main className="saved-movies">
@@ -12,7 +12,7 @@ function SavedMovies({ cards, isLoading, serverError, handleCardDelete, isSaved,
             <MoviesCardList  
                 cards={cards}
                 isLoading={isLoading}
-                serverError={serverError}
+                error={error}
                 handleCardDelete={handleCardDelete}
                 isSaved={isSaved}
             />

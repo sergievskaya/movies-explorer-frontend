@@ -1,8 +1,35 @@
-import React from "react";
+import { useState } from "react";
+import { Redirect } from "react-router-dom";
 import Form from "../Form/Form";
 import './Register.css';
 
-function Register() {
+function Register({ handleRegistration, loggedIn }) {
+
+    const[name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const[password, setPassword] = useState('');
+
+    function handleSubmit(evt) {
+        evt.preventDefault();
+        handleRegistration({name, email, password});
+    }
+
+    function handleNameChange(evt) {
+        setName(evt.target.value);
+    }
+
+    function handleEmailChange(evt) {
+        setEmail(evt.target.value);
+    }
+
+    function handlePasswordChange(evt) {
+        setPassword(evt.target.value);
+    }
+
+    if (loggedIn) {
+        return <Redirect to="/movies"/>
+    }
+
     return (
         <Form 
             title='Добро пожаловать!'
@@ -10,6 +37,7 @@ function Register() {
             text='Уже зарегистрированы?'
             linkText='Войти'
             path='/signin'
+            handleSubmit={handleSubmit}
         >
             <fieldset className="form__fields">
                 <div className="form__field">
@@ -21,7 +49,7 @@ function Register() {
                         placeholder="Имя"
                         minLength="2"
                         maxLength="30"
-                        defaultValue="Виталий"
+                        onChange={handleNameChange}
                     />
                     <span className="form__input-error"></span>
                 </div>
@@ -32,21 +60,21 @@ function Register() {
                         type="email"
                         required
                         placeholder="E-mail"
-                        defaultValue="pochta@yandex.ru"
+                        onChange={handleEmailChange}
                     />
                     <span className="form__input-error"></span>
                 </div>
                 <div className= "form__field">
                     <label className="form__label">Пароль</label>
                     <input
-                        className="form__input form__input_color-error"
+                        className="form__input"
                         type="password"
                         required
                         placeholder="Пароль"
                         minLength="6"
-                        defaultValue="12345678" 
+                        onChange={handlePasswordChange}
                     />
-                    <span className="form__input-error">что-то пошло не так...</span>
+                    <span className="form__input-error"></span>
                 </div>
             </fieldset>
         </Form>

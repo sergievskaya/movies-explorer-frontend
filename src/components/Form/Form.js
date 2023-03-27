@@ -4,9 +4,9 @@ import './Form.css';
 import logo from '../../images/logo.svg';
 
 
-function Form({ title, buttonText, text, linkText, path, children }) {
+function Form({ title, buttonText, text, linkText, path, children, handleSubmit }) {
     return (
-        <section className="form">
+        <section className="form" onSubmit={handleSubmit}>
             <Link to="/" className="form__logo-link">
                 <img className="form__logo" src={logo} alt="Логотип Movies Explorer"></img>
             </Link>

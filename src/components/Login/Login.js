@@ -1,8 +1,30 @@
-import React from "react";
+import { useState } from "react";
+import { Redirect } from "react-router-dom";
 import Form from "../Form/Form";
 import './Login.css';
 
-function Login() {
+function Login({ handleAuthorization, loggedIn }) {
+
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
+    function handleSubmit(evt) {
+        evt.preventDefault();
+        handleAuthorization(email, password);
+    }
+
+    function handleEmailChange(evt) {
+        setEmail(evt.target.value);
+    }
+
+    function handlePasswordChange(evt) {
+        setPassword(evt.target.value);
+    }
+
+    if (loggedIn) {
+        return <Redirect to="/movies"/>
+    }
+
     return (
         <Form 
             title='Рады видеть!'
@@ -10,6 +32,7 @@ function Login() {
             text='Ещё не зарегистрированы?'
             linkText='Регистрация'
             path='signup'
+            handleSubmit={handleSubmit}
         >
             <fieldset className="form__fields">
                 <div className= "form__field">
@@ -19,7 +42,7 @@ function Login() {
                         type="email"
                         required
                         placeholder="E-mail"
-                        defaultValue="pochta@yandex.ru"
+                        onChange={handleEmailChange}
                     />
                     <span className="form__input-error"></span>
                 </div>
@@ -31,6 +54,7 @@ function Login() {
                         placeholder="Пароль"
                         minLength="6"
                         required
+                        onChange={handlePasswordChange}
                     />
                     <span className="form__input-error"></span>
                 </div>

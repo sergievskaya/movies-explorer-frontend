@@ -2,7 +2,7 @@ import React from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import './Navigation.css'
 
-function Navigation({ pathname }) {
+function Navigation({ loggedIn }) {
   const [isPopupOpen, setIsPopupOpen] = React.useState(false)
 
   function handlePopupOpen() {
@@ -15,7 +15,7 @@ function Navigation({ pathname }) {
 
   return (
     <>
-      {pathname === '/' ? (
+      {!loggedIn ? (
         <nav className="navigation">
           <ul className="navigation__list">
             <li className="navigation__list-item">

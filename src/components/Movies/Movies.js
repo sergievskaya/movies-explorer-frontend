@@ -3,7 +3,7 @@ import MoviesCardList from "../MoviesCardList/MoviesCardList";
 import SearchForm from "../SearchForm/SearchForm";
 import './Movies.css';
 
-function Movies({ cards,  isLoading, serverError, handleCardSave, isSaved, handleSearchMovie, defaultValueInput, defaultValueCheckbox }) {
+function Movies({ cards,  isLoading, error, handleCardSave, isSaved, handleSearchMovie, defaultValueInput, defaultValueCheckbox }) {
 
     const [movies, setMovies] = useState([]);
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -56,7 +56,7 @@ function Movies({ cards,  isLoading, serverError, handleCardSave, isSaved, handl
             <MoviesCardList 
                 cards={movies}
                 isLoading={isLoading}
-                serverError={serverError}
+                error={error}
                 handleCardSave={handleCardSave}
                 isSaved={isSaved}
             />

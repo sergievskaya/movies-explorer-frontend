@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 import './App.css';
 import Header from '../Header/Header';
@@ -14,56 +14,104 @@ import Profile from '../Profile/Profile';
 import moviesApi from '../../utils/MoviesApi';
 import mainApi from '../../utils/MainApi';
 import { MovieNotFoundMessage, serverErrorMessage } from '../../utils/constans';
+import ProtectedRoute from '../ProtectedRoute/ProtectedRoute';
 
 function App() {
 
   const { pathname } = useLocation();
 
+  const [loggedIn, setLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState({});
-  const [movies, setMovies] = useState([]);
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [moviesError, setMoviesError] = useState('');
+  const [SavedMoviesError, setSavedMoviesError] = useState(false);
+
+  const [foundMovies, setFoundMovies] = useState([]);
+  const [requestText, setRequesText] = useState('');
+  const [checkbox, setCheckbox] = useState(false);
+ 
   const [savedMovies, setSavedMovies] = useState([]);
   const [foundSavedMovies, setFoundSavedMovies] = useState([]);
-  const [requestText, setRequesText] = useState('');
-  const [shortFilm, setShortFilm] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [serverError, setServerError] = useState('');
 
   useEffect(() => {
-        Promise.all([mainApi.getUserInfo()])
-        .then(([userData]) => {
-            setCurrentUser(userData);
-        })
-        .catch((err) => {
-            console.log(`Ошибка: ${err}`);
-        });
+    if(loggedIn) {
+      Promise.all([mainApi.getUserInfo(), mainApi.getSavedMovies()])
+      .then(([userData, movies]) => {
+          setCurrentUser(userData);
+          setSavedMovies(movies);
+          setFoundSavedMovies(movies);
+      })
+      .catch((err) => {
+          console.log(err);
+      });
+    }   
+  }, [loggedIn]);
+
+  useEffect(() => {
+    tokenCheck();
   }, []);
 
   useEffect(() => {
-    mainApi.getSavedMovies()
-    .then((movies)=> {
-      setSavedMovies(movies);
-      setFoundSavedMovies(movies);
-    })
-    .catch((err) => {
-      console.log(`Ошибка: ${err}`);
-    })
-  }, []);
+    if(loggedIn) {
+      setFoundMovies(JSON.parse(localStorage.getItem('foundMovies')));
+      setRequesText(localStorage.getItem('requestText'));
+      setCheckbox(JSON.parse(localStorage.getItem('checkbox')));
+    }
+  }, [loggedIn]);
 
-  useEffect(() => {
-    setMovies(JSON.parse(localStorage.getItem('foundMovies')));
-    setRequesText(localStorage.getItem('requestText'));
-    setShortFilm(JSON.parse(localStorage.getItem('shortFilm')));
-  }, []);
+  //проверка токена
+  function tokenCheck() {
+    const token = localStorage.getItem('jwt');
+    if(!token){
+        return;
+    } else {
+      setLoggedIn(true);
+    }
+  }
+
+  //вход
+  function handleAuthorization(email, password) {
+    mainApi.authorize(email, password)
+      .then((res) => {
+          if(res.token) {
+              localStorage.setItem('jwt', res.token);
+          } 
+          setLoggedIn(true);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
+  //выход
+  function handleSignOut() {
+    setLoggedIn(false);
+    localStorage.removeItem('jwt');
+    localStorage.removeItem('foundMovies');
+    localStorage.removeItem('requestText');
+    localStorage.removeItem('checkbox');
+  }
+
+  //регистрация
+  function handleRegistration(data) {
+    mainApi.register(data)
+      .then(() => {
+        handleAuthorization(data.email, data.password);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
 
   //обновить информацию пользователя
   function handleUpdateUser(name, email) {
     mainApi.updateUserInfo(name, email)
       .then((userData) => {
-        console.log('запрос прошёл')
         setCurrentUser(userData);
       })
       .catch((err) => {
-        console.log(`Ошибка: ${err}`);
+        console.log(err);
       })
   }
 
@@ -73,9 +121,9 @@ function App() {
     const foundMovies = checkbox ? filterMovies.filter((movie) => movie.duration <= 40) : filterMovies;
 
     if (foundMovies.length === 0) {
-      setServerError(MovieNotFoundMessage);
+      setSavedMoviesError(MovieNotFoundMessage);
     } else {
-      setServerError('');
+      setSavedMoviesError('');
     }
 
     setFoundSavedMovies(foundMovies);
@@ -90,24 +138,24 @@ function App() {
         const foundMovies = checkbox ? filterMovies.filter((movie) => movie.duration <= 40) : filterMovies;
         localStorage.setItem('foundMovies', JSON.stringify(foundMovies));
         localStorage.setItem('requestText', movieName);
-        localStorage.setItem('shortFilm', checkbox);
-        setMovies(foundMovies)
+        localStorage.setItem('checkbox', checkbox);
+        setFoundMovies(foundMovies);
 
         if (foundMovies.length === 0) {
-          setServerError(MovieNotFoundMessage);
+          setMoviesError(MovieNotFoundMessage);
         } else {
-          setServerError('');
+          setMoviesError('');
         }
       })
       .catch((err) => {
-        console.log(`Ошибка: ${err}`);
-        setServerError(serverErrorMessage);
+        console.log(err);
+        setMoviesError(serverErrorMessage);
       })
       .finally(() => {
         setIsLoading(false);
       });
   }
-
+  
   //сохранить фильм
   function handleCardSave(card) {
     //если карточка уже сохранена то удалить её
@@ -136,7 +184,7 @@ function App() {
         setFoundSavedMovies(foundSavedMovies.filter(item => item._id !== card._id));
       })
       .catch((err) => {
-        console.log(`Ошибка: ${err}`);
+        console.log(err);
       })
   }
 
@@ -149,47 +197,58 @@ function App() {
     <CurrentUserContext.Provider value={currentUser}>
       <div className="App">
 
-        {pathname === '/' || pathname === '/movies' || pathname === '/saved-movies' || pathname === '/profile' ? <Header /> : <></>}
+        {pathname === '/' || pathname === '/movies' || pathname === '/saved-movies' || pathname === '/profile' ? <Header loggedIn={loggedIn} /> : <></>}
 
         <Switch>
           <Route exact path="/">
             <Main />
           </Route>
 
-          <Route path="/movies">
-            <Movies
-              cards={movies}
-              handleSearchMovie={handleSearchMovie}
-              isLoading={isLoading}
-              serverError={serverError}
-              handleCardSave={handleCardSave}
-              isSaved={isSaved}
-              defaultValueInput={requestText}
-              defaultValueCheckbox={shortFilm}
-            />
-          </Route> 
-          <Route path="/saved-movies">
-            <SavedMovies
-              cards={foundSavedMovies}
-              isLoading={isLoading}
-              serverError={serverError}
-              handleCardDelete={handleCardDelete}
-              isSaved={isSaved}
-              handleSearchMovie={handleSearchSavedMovie}
-            />
-          </Route>
+          <ProtectedRoute
+            path="/movies"
+            component={Movies}
+            loggedIn={loggedIn}
+            cards={foundMovies}
+            handleSearchMovie={handleSearchMovie}
+            isLoading={isLoading}
+            error={moviesError}
+            handleCardSave={handleCardSave}
+            isSaved={isSaved}
+            defaultValueInput={requestText}
+            defaultValueCheckbox={checkbox}
+          />
+
+          <ProtectedRoute 
+            path="/saved-movies"
+            component={SavedMovies}
+            loggedIn={loggedIn}
+            cards={foundSavedMovies}
+            isLoading={isLoading}
+            error={SavedMoviesError}
+            handleCardDelete={handleCardDelete}
+            isSaved={isSaved}
+            handleSearchMovie={handleSearchSavedMovie}
+          />
+
+          <ProtectedRoute 
+            path="/profile"
+            component={Profile}
+            loggedIn={loggedIn}
+            handleUpdateUser={handleUpdateUser}
+            handleSignOut={handleSignOut}
+          />
 
           <Route path="/signup">
-            <Register />
+            <Register
+              handleRegistration={handleRegistration}
+              loggedIn={loggedIn}
+            />
           </Route>
 
           <Route path="/signin">
-            <Login />
-          </Route>
-
-          <Route path="/profile">
-            <Profile 
-              handleUpdateUser={handleUpdateUser}
+            <Login
+              handleAuthorization={handleAuthorization}
+              loggedIn={loggedIn}
             />
           </Route>
 
