@@ -1,15 +1,21 @@
-import React from "react";
-// import MoviesCardList from "../MoviesCardList/MoviesCardList";
-//import SearchForm from "../SearchForm/SearchForm";
+import MoviesCardList from "../MoviesCardList/MoviesCardList";
+import SearchForm from "../SearchForm/SearchForm";
 import './SavedMovies.css';
-//import savedMovies from "../../utils/savedMovies"
 
-function SavedMovies() {
+function SavedMovies({ cards, isLoading, serverError, handleCardDelete, isSaved, handleSearchMovie }) {
+
     return (
         <main className="saved-movies">
-            {/* <SearchForm /> 
-            <MoviesCardList  cards={savedMovies}/>
-            */}
+            <SearchForm 
+                handleSearchMovie={handleSearchMovie}
+            />
+            <MoviesCardList  
+                cards={cards}
+                isLoading={isLoading}
+                serverError={serverError}
+                handleCardDelete={handleCardDelete}
+                isSaved={isSaved}
+            />
         </main>
     );
 }

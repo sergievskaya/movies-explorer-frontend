@@ -61,6 +61,7 @@
 .profile__button {
     display: flex;
     align-self: center;
+    text-align: center;
     background-color: transparent;
     border: none;
     width: max-content;
@@ -87,6 +88,19 @@
     font-weight: 500;
 }
 
+.profile__button_type_save {
+    background-color: #4285F4;
+    display: block;
+    color: #fff;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 17px;
+    width: 100%;
+    height: 45px;
+    border-radius: 3px;
+    margin-top: 204px;
+}
+
 @media screen and (max-width: 1023px) {
     .profile {
         padding-top: 236px;
@@ -98,6 +112,10 @@
     }
 
     .profile__button_type_edit {
+        margin-top: 194px;
+    }
+
+    .profile__button_type_save {
         margin-top: 194px;
     }
 }
@@ -119,5 +137,11 @@
 
     .profile__button_type_edit {
         margin-top: 363px;
+    }
+
+    .profile__button_type_save {
+        margin-top: 363px;
+        font-size: 13px;
+        line-height: 16px;
     }
 }

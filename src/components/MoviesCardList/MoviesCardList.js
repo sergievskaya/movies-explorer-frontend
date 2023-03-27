@@ -2,38 +2,31 @@ import React from "react";
 import Preloader from "../Preloader/Preloader";
 import MoviesCard from "../MoviesCard/MoviesCard";
 import './MoviesCardList.css';
+import { useLocation } from "react-router-dom";
 
-function MoviesCardList({ cards, isLoading, serverError }) {
-    let content;
+function MoviesCardList({ cards, isLoading, serverError, handleCardSave, handleCardDelete, isSaved }) {
 
-    if (isLoading) {
-        content = <Preloader />;
-    } else if (serverError) {
-        content = (
-            <span className="cards__error-text">
-                Во время запроса произошла ошибка. Возможно, проблема с соединением или сервер недоступен. 
-                Подождите немного и попробуйте ещё раз
-            </span>
-        );   
-    } else if (cards.length === 0) {  
-        content = <span className="cards__error-text">Ничего не найдено</span>;
-    
-    } else {
-        content = (
-            <ul className="cards__list">
-                {cards.map((card) => (
-                    <MoviesCard 
-                        key={card.id} 
-                        card={card} 
-                />
-                ))}
-            </ul>
-        );
-    }
+    const { pathname } = useLocation();
+
+    if (isLoading) return <Preloader />
 
     return (
         <section className="cards">
-            {content}
+            {serverError ? (
+                <span className="cards__error-text">{serverError}</span>
+            ) : (
+                <ul className="cards__list">
+                    {cards.map((card) => (  
+                        <MoviesCard 
+                            key={pathname === '/movies' ? card.id : card._id} 
+                            card={card}
+                            handleCardSave={handleCardSave}
+                            handleCardDelete={handleCardDelete}
+                            isSaved={isSaved}
+                        />
+                    ))}
+                </ul>
+            )}
         </section>
     );
 }
