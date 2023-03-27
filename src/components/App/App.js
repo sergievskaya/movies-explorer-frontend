@@ -20,7 +20,7 @@ function App() {
 
   const { pathname } = useLocation();
 
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(tokenCheck());
   const [currentUser, setCurrentUser] = useState({});
 
   const [isLoading, setIsLoading] = useState(false);
@@ -49,10 +49,6 @@ function App() {
   }, [loggedIn]);
 
   useEffect(() => {
-    tokenCheck();
-  }, []);
-
-  useEffect(() => {
     if(loggedIn) {
       setFoundMovies(JSON.parse(localStorage.getItem('foundMovies')));
       setRequesText(localStorage.getItem('requestText'));
@@ -60,22 +56,26 @@ function App() {
     }
   }, [loggedIn]);
 
+  useEffect(() => {
+    setLoggedIn(tokenCheck());
+  }, []);
+
   //проверка токена
-  function tokenCheck() {
+  function tokenCheck () {
     const token = localStorage.getItem('jwt');
     if(!token){
-        return;
+        return false;
     } else {
-      setLoggedIn(true);
+      return true;
     }
   }
 
   //вход
-  function handleAuthorization(email, password) {
+  function handleAuthorization({email, password}) {
     mainApi.authorize(email, password)
       .then((res) => {
           if(res.token) {
-              localStorage.setItem('jwt', res.token);
+            localStorage.setItem('jwt', res.token);
           } 
           setLoggedIn(true);
       })
@@ -105,7 +105,7 @@ function App() {
   }
 
   //обновить информацию пользователя
-  function handleUpdateUser(name, email) {
+  function handleUpdateUser({name, email}) {
     mainApi.updateUserInfo(name, email)
       .then((userData) => {
         setCurrentUser(userData);

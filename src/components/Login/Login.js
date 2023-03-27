@@ -1,24 +1,18 @@
-import { useState } from "react";
 import { Redirect } from "react-router-dom";
 import Form from "../Form/Form";
 import './Login.css';
+import { useFormWithValidation } from '../../utils/UseFormValidation';
 
 function Login({ handleAuthorization, loggedIn }) {
 
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const { values, handleChange, errors, isValid } = useFormWithValidation();
 
     function handleSubmit(evt) {
         evt.preventDefault();
-        handleAuthorization(email, password);
-    }
-
-    function handleEmailChange(evt) {
-        setEmail(evt.target.value);
-    }
-
-    function handlePasswordChange(evt) {
-        setPassword(evt.target.value);
+        handleAuthorization({
+            email: values.email,
+            password: values.password
+        });
     }
 
     if (loggedIn) {
@@ -33,30 +27,35 @@ function Login({ handleAuthorization, loggedIn }) {
             linkText='Регистрация'
             path='signup'
             handleSubmit={handleSubmit}
+            isValid={isValid}
         >
             <fieldset className="form__fields">
                 <div className= "form__field">
                     <label className="form__label">E-mail</label>
                     <input
-                        className="form__input"
+                        name="email"
+                        className={`form__input ${!errors.email ? '' : 'form__input_color-error'}`}
                         type="email"
                         required
                         placeholder="E-mail"
-                        onChange={handleEmailChange}
+                        value={values.email || ''}
+                        onChange={handleChange}
                     />
-                    <span className="form__input-error"></span>
+                    <span className="form__input-error">{errors.email}</span>
                 </div>
                 <div className= "form__field">
                     <label className="form__label">Пароль</label>
                     <input
-                        className="form__input"
+                        name="password"
+                        className={`form__input ${!errors.password ? '' : 'form__input_color-error'}`}
                         type="password"
                         placeholder="Пароль"
                         minLength="6"
                         required
-                        onChange={handlePasswordChange}
+                        onChange={handleChange}
+                        value={values.password || ''}
                     />
-                    <span className="form__input-error"></span>
+                    <span className="form__input-error">{errors.password}</span>
                 </div>
             </fieldset>
         </Form>

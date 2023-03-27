@@ -101,6 +101,16 @@
     opacity: 0.8;
 }
 
+.form__button_disabled {
+    background-color: #2F2F2F;
+    color: #8B8B8B;
+}
+
+.form__button_disabled:hover {
+    opacity: 1;
+    cursor: default;
+}
+
 .form__text {
     font-weight: 400;
     font-size: 14px;

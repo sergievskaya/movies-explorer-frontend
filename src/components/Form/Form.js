@@ -4,7 +4,7 @@ import './Form.css';
 import logo from '../../images/logo.svg';
 
 
-function Form({ title, buttonText, text, linkText, path, children, handleSubmit }) {
+function Form({ title, buttonText, text, linkText, path, children, handleSubmit, isValid }) {
     return (
         <section className="form" onSubmit={handleSubmit}>
             <Link to="/" className="form__logo-link">
@@ -13,7 +13,7 @@ function Form({ title, buttonText, text, linkText, path, children, handleSubmit 
             <h2 className="form__title">{title}</h2>
             <form className="form__form">
                 {children}
-                <button className="form__button" type="submit">{buttonText}</button>
+                <button className={`form__button ${isValid ? '': 'form__button_disabled'}`} type="submit" disabled={!isValid}>{buttonText}</button>
             </form>
             <p className="form__text">
                 {text}

@@ -1,29 +1,18 @@
-import { useState } from "react";
 import { Redirect } from "react-router-dom";
 import Form from "../Form/Form";
 import './Register.css';
+import { useFormWithValidation } from '../../utils/UseFormValidation';
 
 function Register({ handleRegistration, loggedIn }) {
 
-    const[name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const[password, setPassword] = useState('');
+    const { values, handleChange, errors, isValid } = useFormWithValidation();
 
     function handleSubmit(evt) {
         evt.preventDefault();
-        handleRegistration({name, email, password});
-    }
-
-    function handleNameChange(evt) {
-        setName(evt.target.value);
-    }
-
-    function handleEmailChange(evt) {
-        setEmail(evt.target.value);
-    }
-
-    function handlePasswordChange(evt) {
-        setPassword(evt.target.value);
+        handleRegistration({
+            name: values.name,
+            email: values.email,
+            password: values.password});
     }
 
     if (loggedIn) {
@@ -38,44 +27,53 @@ function Register({ handleRegistration, loggedIn }) {
             linkText='Войти'
             path='/signin'
             handleSubmit={handleSubmit}
+            isValid={isValid}
         >
             <fieldset className="form__fields">
                 <div className="form__field">
                     <label className="form__label">Имя</label>
                     <input
-                        className="form__input"
+                        name="name"
+                        className={`form__input ${!errors.name ? '' : 'form__input_color-error'}`}
                         type="text"
                         required
                         placeholder="Имя"
                         minLength="2"
                         maxLength="30"
-                        onChange={handleNameChange}
+                        onChange={handleChange}
+                        value={values.name || ''}
                     />
-                    <span className="form__input-error"></span>
+                    <span className="form__input-error">{errors.name}</span>
                 </div>
+
                 <div className= "form__field">
                     <label className="form__label">E-mail</label>
                     <input
-                        className="form__input"
+                        name="email"
+                        className={`form__input ${!errors.email ? '' : 'form__input_color-error'}`}
                         type="email"
                         required
                         placeholder="E-mail"
-                        onChange={handleEmailChange}
+                        onChange={handleChange}
+                        value={values.email || ''}
                     />
-                    <span className="form__input-error"></span>
+                    <span className="form__input-error">{errors.email}</span>
                 </div>
                 <div className= "form__field">
                     <label className="form__label">Пароль</label>
                     <input
-                        className="form__input"
+                        name="password"
+                        className={`form__input ${!errors.password ? '' : 'form__input_color-error'}`}
                         type="password"
                         required
                         placeholder="Пароль"
                         minLength="6"
-                        onChange={handlePasswordChange}
+                        onChange={handleChange}
+                        value={values.password || ''}
                     />
-                    <span className="form__input-error"></span>
+                    <span className="form__input-error">{errors.password}</span>
                 </div>
+
             </fieldset>
         </Form>
     );

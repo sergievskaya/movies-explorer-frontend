@@ -2,29 +2,23 @@ import { useContext, useEffect, useState } from "react";
 import { Redirect } from "react-router-dom";
 import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 import './Profile.css';
+import { useFormWithValidation } from '../../utils/UseFormValidation';
 
 function Profile({ handleUpdateUser, handleSignOut, loggedIn }) {
 
+    const { values, handleChange, errors, isValid, setValues } = useFormWithValidation();
+
     const currentUser = useContext(CurrentUserContext);
 
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
     const [isEdit, setIsEdit] = useState(false);
 
     const inputDisabled = isEdit ? false : true;
 
+    const saveButtonClassName = `profile__button profile__button_type_save ${isValid ? '': 'profile__button_disabled'}`;
+
     useEffect(() => {
-        setName(currentUser.name);
-        setEmail(currentUser.email);
-    }, [currentUser]); 
-
-    function handleNameChange(evt) {
-        setName(evt.target.value);
-    }
-
-    function handleEmailChange(evt) {
-        setEmail(evt.target.value);
-    }
+        setValues(currentUser);
+    }, [currentUser, setValues]); 
 
     function handleEditClick() {
         setIsEdit(true);
@@ -32,7 +26,10 @@ function Profile({ handleUpdateUser, handleSignOut, loggedIn }) {
 
     function handleSubmit(evt) {
         evt.preventDefault();
-        handleUpdateUser(name, email);
+        handleUpdateUser({
+            name: values.name,
+            email: values.email
+        });
     }
 
     if (!loggedIn) {
@@ -47,32 +44,36 @@ function Profile({ handleUpdateUser, handleSignOut, loggedIn }) {
                     <div className="profile__field">
                         <label className="profile__label">Имя</label>
                         <input 
+                            name="name"
                             className="profile__input"
                             type="text"
                             required
-                            value={name || ''}
+                            value={values.name || ''}
+                            onChange={handleChange}
                             disabled={inputDisabled}
-                            onChange={handleNameChange}
                             minLength="2"
                             maxLength="30"
 
                         />
                     </div>
+                    <span className="profile__input-error">{errors.name}</span>
                     <div className="profile__field">
                         <label className="profile__label">E-mail</label>
                         <input
+                            name="email"
                             className="profile__input"
                             type="email"
                             required
-                            value={email || ''} 
+                            value={values.email || ''}
+                            onChange={handleChange}
                             disabled={inputDisabled}
-                            onChange={handleEmailChange}
                         />
                     </div>
+                    <span className="profile__input-error">{errors.email}</span>
                 </fieldset>
                 
                 {isEdit ? (
-                    <button className="profile__button profile__button_type_save" type="submit">Сохранить</button>
+                    <button className={saveButtonClassName} type="submit">Сохранить</button>
                 ) : (
                     <>
                         <button className="profile__button profile__button_type_edit" type="button" onClick={handleEditClick}>Редактировать</button>
