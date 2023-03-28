@@ -13,7 +13,15 @@ import Login from '../Login/Login';
 import Profile from '../Profile/Profile';
 import moviesApi from '../../utils/MoviesApi';
 import mainApi from '../../utils/MainApi';
-import { MovieNotFoundMessage, serverErrorMessage } from '../../utils/constans';
+import { 
+  movieNotFoundMessage, 
+  serverErrorMessage,
+  conflictErrorMessage,
+  updateUserErrorMessage,
+  loginErrorMessage,
+  registerErrorMessage,
+
+} from '../../utils/constans';
 import ProtectedRoute from '../ProtectedRoute/ProtectedRoute';
 
 function App() {
@@ -26,6 +34,9 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [moviesError, setMoviesError] = useState('');
   const [savedMoviesError, setSavedMoviesError] = useState(false);
+  const [updateUserError, setUpdateUserError] = useState('');
+  const [loginError, setLoginError] = useState('');
+  const [registerError, setRegisterError] = useState('');
 
   const [foundMovies, setFoundMovies] = useState([]);
   const [requestText, setRequesText] = useState('');
@@ -43,7 +54,7 @@ function App() {
             setFoundSavedMovies(movies);
         })
         .catch((err) => {
-            console.log(err);
+          console.log(`Oшибка: ${err.status} ${err.statusText}`);
         });
     }   
   }, [loggedIn]);
@@ -78,9 +89,11 @@ function App() {
             localStorage.setItem('jwt', res.token);
           } 
           setLoggedIn(true);
+          setLoginError('');
       })
       .catch((err) => {
-        console.log(err);
+        console.log(`Oшибка: ${err.status} ${err.statusText}`);
+        setLoginError(loginErrorMessage);
       });
   }
 
@@ -97,10 +110,19 @@ function App() {
   function handleRegistration(data) {
     mainApi.register(data)
       .then(() => {
-        handleAuthorization(data.email, data.password);
+        handleAuthorization({
+          email: data.email,
+          password: data.password
+        });
+        setLoginError('');
       })
       .catch((err) => {
-        console.log(err);
+        console.log(`Oшибка: ${err.status} ${err.statusText}`);
+        if (err.status === 409) {
+          setRegisterError(conflictErrorMessage);
+        } else {
+          setRegisterError(registerErrorMessage);
+        }
       });
   }
 
@@ -109,9 +131,15 @@ function App() {
     mainApi.updateUserInfo(name, email)
       .then((userData) => {
         setCurrentUser(userData);
+        setUpdateUserError('');
       })
       .catch((err) => {
-        console.log(err);
+        console.log(`Oшибка: ${err.status} ${err.statusText}`);
+        if (err.status === 409) {
+          setUpdateUserError(conflictErrorMessage);
+        } else {
+          setUpdateUserError(updateUserErrorMessage);
+        }
       })
   }
 
@@ -121,7 +149,7 @@ function App() {
     const foundMovies = checkbox ? filterMovies.filter((movie) => movie.duration <= 40) : filterMovies;
 
     if (foundMovies.length === 0) {
-      setSavedMoviesError(MovieNotFoundMessage);
+      setSavedMoviesError(movieNotFoundMessage);
     } else {
       setSavedMoviesError('');
     }
@@ -142,7 +170,7 @@ function App() {
         setFoundMovies(foundMovies);
 
         if (foundMovies.length === 0) {
-          setMoviesError(MovieNotFoundMessage);
+          setMoviesError(movieNotFoundMessage);
         } else {
           setMoviesError('');
         }
@@ -172,7 +200,7 @@ function App() {
         setFoundSavedMovies([...savedMovies, savedMovie]);
       })
       .catch((err) => {
-        console.log(`Ошибка: ${err}`);
+        console.log(`Oшибка: ${err.status} ${err.statusText}`);
       })
   }
 
@@ -184,7 +212,7 @@ function App() {
         setFoundSavedMovies(foundSavedMovies.filter(item => item._id !== card._id));
       })
       .catch((err) => {
-        console.log(err);
+        console.log(`Oшибка: ${err.status} ${err.statusText}`);
       })
   }
 
@@ -241,12 +269,14 @@ function App() {
             loggedIn={loggedIn}
             handleUpdateUser={handleUpdateUser}
             handleSignOut={handleSignOut}
+            errorMessage={updateUserError}
           />
 
           <Route path="/signup">
             <Register
               handleRegistration={handleRegistration}
               loggedIn={loggedIn}
+              errorMessage={registerError}
             />
           </Route>
 
@@ -254,6 +284,7 @@ function App() {
             <Login
               handleAuthorization={handleAuthorization}
               loggedIn={loggedIn}
+              errorMessage={loginError}
             />
           </Route>
 

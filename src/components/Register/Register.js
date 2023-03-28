@@ -2,17 +2,21 @@ import { Redirect } from "react-router-dom";
 import Form from "../Form/Form";
 import './Register.css';
 import { useFormWithValidation } from '../../utils/UseFormValidation';
+import { useState } from "react";
 
-function Register({ handleRegistration, loggedIn }) {
+function Register({ handleRegistration, loggedIn, errorMessage }) {
 
     const { values, handleChange, errors, isValid } = useFormWithValidation();
+    const [isReqSent, setIsReqSent] = useState(false);
 
     function handleSubmit(evt) {
         evt.preventDefault();
         handleRegistration({
             name: values.name,
             email: values.email,
-            password: values.password});
+            password: values.password
+        });
+        setIsReqSent(true);
     }
 
     if (loggedIn) {
@@ -28,6 +32,8 @@ function Register({ handleRegistration, loggedIn }) {
             path='/signin'
             handleSubmit={handleSubmit}
             isValid={isValid}
+            errorMessage={errorMessage}
+            isReqSent={isReqSent}
         >
             <fieldset className="form__fields">
                 <div className="form__field">

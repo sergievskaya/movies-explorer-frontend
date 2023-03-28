@@ -2,10 +2,12 @@ import { Redirect } from "react-router-dom";
 import Form from "../Form/Form";
 import './Login.css';
 import { useFormWithValidation } from '../../utils/UseFormValidation';
+import { useState } from "react";
 
-function Login({ handleAuthorization, loggedIn }) {
+function Login({ handleAuthorization, loggedIn, errorMessage }) {
 
     const { values, handleChange, errors, isValid } = useFormWithValidation();
+    const [isReqSent, setIsReqSent] = useState(false);
 
     function handleSubmit(evt) {
         evt.preventDefault();
@@ -13,6 +15,7 @@ function Login({ handleAuthorization, loggedIn }) {
             email: values.email,
             password: values.password
         });
+        setIsReqSent(true);
     }
 
     if (loggedIn) {
@@ -28,6 +31,8 @@ function Login({ handleAuthorization, loggedIn }) {
             path='signup'
             handleSubmit={handleSubmit}
             isValid={isValid}
+            errorMessage={errorMessage}
+            isReqSent = {isReqSent}
         >
             <fieldset className="form__fields">
                 <div className= "form__field">

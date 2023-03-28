@@ -4,7 +4,8 @@ import './Form.css';
 import logo from '../../images/logo.svg';
 
 
-function Form({ title, buttonText, text, linkText, path, children, handleSubmit, isValid }) {
+function Form({ title, buttonText, text, linkText, path, children, handleSubmit, isValid, errorMessage, isReqSent }) {
+    
     return (
         <section className="form" onSubmit={handleSubmit}>
             <Link to="/" className="form__logo-link">
@@ -13,7 +14,17 @@ function Form({ title, buttonText, text, linkText, path, children, handleSubmit,
             <h2 className="form__title">{title}</h2>
             <form className="form__form">
                 {children}
-                <button className={`form__button ${isValid ? '': 'form__button_disabled'}`} type="submit" disabled={!isValid}>{buttonText}</button>
+                <div className="form__button-container">
+                    <span className="form__error">{(errorMessage && isReqSent) ? errorMessage : ''}</span>
+                    <button 
+                      className={`form__button ${isValid ? '': 'form__button_disabled'}`} 
+                      type="submit" 
+                      disabled={!isValid}
+                    >
+                      {buttonText}
+                    </button>
+                </div>
+                
             </form>
             <p className="form__text">
                 {text}

@@ -83,6 +83,21 @@
     margin-top: 10px;
 }
 
+.form__button-container {
+    display: flex;
+    flex-direction: column;
+    margin-top: 30px;
+}
+
+.form__error {
+    text-align: center;
+    font-weight: 400;
+    font-size: 11px;
+    line-height: 13px;
+    color: #EE3465;
+    margin-bottom: 20px;
+}
+
 .form__button {
     background-color: #4285F4;
     color: #fff;
@@ -93,7 +108,6 @@
     border: none;
     border-radius: 3px;
     transition: opacity 0.2s linear;
-    margin-top: 49px;
 }
 
 .form__button:hover {

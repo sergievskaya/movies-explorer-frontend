@@ -4,17 +4,18 @@ import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 import './Profile.css';
 import { useFormWithValidation } from '../../utils/UseFormValidation';
 
-function Profile({ handleUpdateUser, handleSignOut, loggedIn }) {
+function Profile({ handleUpdateUser, handleSignOut, loggedIn, errorMessage }) {
 
     const { values, handleChange, errors, isValid, setValues } = useFormWithValidation();
 
     const currentUser = useContext(CurrentUserContext);
 
     const [isEdit, setIsEdit] = useState(false);
+    const [isReqSent, setIsReqSent] = useState(false);
 
     const inputDisabled = isEdit ? false : true;
-
-    const saveButtonClassName = `profile__button profile__button_type_save ${isValid ? '': 'profile__button_disabled'}`;
+    const saveButtonClassName = `profile__button profile__button_type_save ${isValid ? '' : 'profile__button_disabled'}`;
+    const responseClassName = `profile__response ${errorMessage ? 'profile__response_type_error' : 'profile__response_type_ok'}`;
 
     useEffect(() => {
         setValues(currentUser);
@@ -30,6 +31,7 @@ function Profile({ handleUpdateUser, handleSignOut, loggedIn }) {
             name: values.name,
             email: values.email
         });
+        setIsReqSent(true);
     }
 
     if (!loggedIn) {
@@ -73,7 +75,10 @@ function Profile({ handleUpdateUser, handleSignOut, loggedIn }) {
                 </fieldset>
                 
                 {isEdit ? (
+                    <>
+                    <span className={responseClassName}>{isReqSent ? errorMessage || 'Изменения сохранены': ''}</span>
                     <button className={saveButtonClassName} type="submit">Сохранить</button>
+                    </>
                 ) : (
                     <>
                         <button className="profile__button profile__button_type_edit" type="button" onClick={handleEditClick}>Редактировать</button>
