@@ -5,5 +5,5 @@
 ссылка на пул-реквест: 
 https://github.com/sergievskaya/movies-explorer-frontend/pull/2
 
-#адрес готового проекта:
+# адрес готового проекта:
 https://movies.sergievskaya.nomoredomains.work
