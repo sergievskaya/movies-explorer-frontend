@@ -7,7 +7,7 @@ export const useFormWithValidation = () => {
   const [isValid, setIsValid] = useState(false);
 
   const checkEmail = (value) => {
-    const re = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
+    const re = /\S+@\S+\.\S{2,6}/;
     return re.test(value);
   }
 
