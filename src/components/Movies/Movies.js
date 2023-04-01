@@ -3,7 +3,7 @@ import MoviesCardList from "../MoviesCardList/MoviesCardList";
 import SearchForm from "../SearchForm/SearchForm";
 import './Movies.css';
 
-function Movies({ cards,  isLoading, error, handleCardSave, isSaved, handleSearchMovie, defaultValueInput, defaultValueCheckbox }) {
+function Movies({ cards, isLoading, error, handleCardSave, isSaved, handleSearchMovie, defaultValueInput, defaultValueCheckbox }) {
 
     const [movies, setMovies] = useState([]);
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -14,7 +14,7 @@ function Movies({ cards,  isLoading, error, handleCardSave, isSaved, handleSearc
             return
         }
       
-        if (windowWidth >= 1280) {
+        if (windowWidth >= 1200) {
             setMovies(cards.slice(0, 12));
             setMoreCards(3);
         

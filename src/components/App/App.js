@@ -39,7 +39,7 @@ function App() {
   const [registerError, setRegisterError] = useState('');
 
   const [foundMovies, setFoundMovies] = useState([]);
-  const [requestText, setRequesText] = useState('');
+  const [requestText, setRequestText] = useState('');
   const [checkbox, setCheckbox] = useState(false);
  
   const [savedMovies, setSavedMovies] = useState([]);
@@ -61,8 +61,8 @@ function App() {
 
   useEffect(() => {
     if(loggedIn) {
-      setFoundMovies(JSON.parse(localStorage.getItem('foundMovies')));
-      setRequesText(localStorage.getItem('requestText'));
+      setFoundMovies(JSON.parse(localStorage.getItem('foundMovies')) || []);
+      setRequestText(localStorage.getItem('requestText'));
       setCheckbox(JSON.parse(localStorage.getItem('checkbox')));
     }
   }, [loggedIn]);
@@ -104,6 +104,10 @@ function App() {
     localStorage.removeItem('foundMovies');
     localStorage.removeItem('requestText');
     localStorage.removeItem('checkbox');
+    localStorage.removeItem('allMovies');
+    setFoundMovies([]);
+    setCheckbox(false);
+    setRequestText('');
   }
 
   //регистрация
@@ -157,31 +161,45 @@ function App() {
     setFoundSavedMovies(foundMovies);
   }
 
+  function filterMovies(movieName, checkbox) {
+    const allMovies = JSON.parse(localStorage.getItem('allMovies')) || [];
+    const filterMovies = allMovies.filter((movie) => movie.nameRU.toLowerCase().includes(movieName.toLowerCase()));
+    const foundMovies = checkbox ? filterMovies.filter((movie) => movie.duration <= 40) : filterMovies;
+    localStorage.setItem('foundMovies', JSON.stringify(foundMovies));
+    localStorage.setItem('requestText', movieName);
+    localStorage.setItem('checkbox', checkbox);
+    setFoundMovies(foundMovies);
+    setRequestText(movieName);
+    setCheckbox(checkbox);
+
+    if (foundMovies.length === 0) {
+      setMoviesError(movieNotFoundMessage);
+    } else {
+      setMoviesError('');
+    }
+  }
+
   //поиск фильмов
   function handleSearchMovie(movieName, checkbox) {
-    setIsLoading(true)
-    moviesApi.getMovies()
-      .then((movies) => {
-        const filterMovies = movies.filter((movie) => movie.nameRU.toLowerCase().includes(movieName.toLowerCase()));
-        const foundMovies = checkbox ? filterMovies.filter((movie) => movie.duration <= 40) : filterMovies;
-        localStorage.setItem('foundMovies', JSON.stringify(foundMovies));
-        localStorage.setItem('requestText', movieName);
-        localStorage.setItem('checkbox', checkbox);
-        setFoundMovies(foundMovies);
+    const allMovies = JSON.parse(localStorage.getItem('allMovies')) || [];
 
-        if (foundMovies.length === 0) {
-          setMoviesError(movieNotFoundMessage);
-        } else {
-          setMoviesError('');
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        setMoviesError(serverErrorMessage);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    if (allMovies.length !== 0) {
+      filterMovies(movieName, checkbox);
+    } else {
+      setIsLoading(true)
+      moviesApi.getMovies()
+        .then((movies) => {
+          localStorage.setItem('allMovies', JSON.stringify(movies));
+          filterMovies(movieName, checkbox);
+        })
+        .catch((err) => {
+          console.log(err);
+          setMoviesError(serverErrorMessage);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    }
   }
   
   //сохранить фильм
@@ -218,6 +236,7 @@ function App() {
 
   function initialFilterMovies() {
     setFoundSavedMovies(savedMovies);
+    setSavedMoviesError('');
   }
 
   //проверить сохранён ли фильм

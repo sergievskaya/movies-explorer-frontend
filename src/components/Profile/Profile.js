@@ -6,7 +6,7 @@ import { useFormWithValidation } from '../../utils/UseFormValidation';
 
 function Profile({ handleUpdateUser, handleSignOut, loggedIn, errorMessage }) {
 
-    const { values, handleChange, errors, isValid, setValues } = useFormWithValidation();
+    const { values, handleChange, errors, isValid, setValues, setIsValid } = useFormWithValidation();
 
     const currentUser = useContext(CurrentUserContext);
 
@@ -19,7 +19,14 @@ function Profile({ handleUpdateUser, handleSignOut, loggedIn, errorMessage }) {
 
     useEffect(() => {
         setValues(currentUser);
-    }, [currentUser, setValues]); 
+    }, [currentUser, setValues]);
+
+    useEffect(() => {
+        if ((values.name ===currentUser.name) && (values.email === currentUser.email)) {
+            setIsValid(false);
+          }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [values])
 
     function handleEditClick() {
         setIsEdit(true);
@@ -77,7 +84,7 @@ function Profile({ handleUpdateUser, handleSignOut, loggedIn, errorMessage }) {
                 {isEdit ? (
                     <>
                     <span className={responseClassName}>{isReqSent ? errorMessage || 'Изменения сохранены': ''}</span>
-                    <button className={saveButtonClassName} type="submit">Сохранить</button>
+                    <button className={saveButtonClassName} type="submit" disabled={!isValid}>Сохранить</button>
                     </>
                 ) : (
                     <>
