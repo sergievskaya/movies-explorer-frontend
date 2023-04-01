@@ -1,23 +1,98 @@
-import React from "react";
+import { useContext, useEffect, useState } from "react";
+import { Redirect } from "react-router-dom";
+import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 import './Profile.css';
+import { useFormWithValidation } from '../../utils/UseFormValidation';
 
-function Profile() {
+function Profile({ handleUpdateUser, handleSignOut, loggedIn, errorMessage }) {
+
+    const { values, handleChange, errors, isValid, setValues, setIsValid } = useFormWithValidation();
+
+    const currentUser = useContext(CurrentUserContext);
+
+    const [isEdit, setIsEdit] = useState(false);
+    const [isReqSent, setIsReqSent] = useState(false);
+
+    const inputDisabled = isEdit ? false : true;
+    const saveButtonClassName = `profile__button profile__button_type_save ${isValid ? '' : 'profile__button_disabled'}`;
+    const responseClassName = `profile__response ${errorMessage ? 'profile__response_type_error' : 'profile__response_type_ok'}`;
+
+    useEffect(() => {
+        setValues(currentUser);
+    }, [currentUser, setValues]);
+
+    useEffect(() => {
+        if ((values.name ===currentUser.name) && (values.email === currentUser.email)) {
+            setIsValid(false);
+          }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [values])
+
+    function handleEditClick() {
+        setIsEdit(true);
+    }
+
+    function handleSubmit(evt) {
+        evt.preventDefault();
+        handleUpdateUser({
+            name: values.name,
+            email: values.email
+        });
+        setIsReqSent(true);
+    }
+
+    if (!loggedIn) {
+        return <Redirect to="/"/>
+    }
+
     return (
         <section className="profile">
-            <h2 className="profile__title">Привет, Виталий!</h2>
-            <form className="profile__form">
+            <h2 className="profile__title">Привет, {currentUser.name}!</h2>
+            <form className="profile__form" onSubmit={handleSubmit}>
                 <fieldset className="profile__fields">
                     <div className="profile__field">
                         <label className="profile__label">Имя</label>
-                        <input className="profile__input" type="text" required defaultValue="Виталий" />
+                        <input 
+                            name="name"
+                            className="profile__input"
+                            type="text"
+                            required
+                            value={values.name || ''}
+                            onChange={handleChange}
+                            disabled={inputDisabled}
+                            minLength="2"
+                            maxLength="30"
+
+                        />
                     </div>
+                    <span className="profile__input-error">{errors.name}</span>
                     <div className="profile__field">
                         <label className="profile__label">E-mail</label>
-                        <input className="profile__input" type="email" required defaultValue="pochta@yandex.ru" />
+                        <input
+                            name="email"
+                            className="profile__input"
+                            type="email"
+                            required
+                            value={values.email || ''}
+                            onChange={handleChange}
+                            disabled={inputDisabled}
+                        />
                     </div>
+                    <span className="profile__input-error">{errors.email}</span>
                 </fieldset>
-                <button className="profile__button profile__button_type_edit" type="button">Редактировать</button>
-                <button className="profile__button profile__button_type_logout" type="button">Выйти из аккаунта</button>
+                
+                {isEdit ? (
+                    <>
+                    <span className={responseClassName}>{isReqSent ? errorMessage || 'Изменения сохранены': ''}</span>
+                    <button className={saveButtonClassName} type="submit" disabled={!isValid}>Сохранить</button>
+                    </>
+                ) : (
+                    <>
+                        <button className="profile__button profile__button_type_edit" type="button" onClick={handleEditClick}>Редактировать</button>
+                        <button className="profile__button profile__button_type_logout" type="button" onClick={handleSignOut}>Выйти из аккаунта</button>
+                    </>
+                )}
+                
             </form>
         </section>
     );

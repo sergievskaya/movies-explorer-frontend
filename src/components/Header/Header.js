@@ -4,7 +4,7 @@ import logo from '../../images/logo.svg';
 import Navigation from "../Navigation/Navigation";
 import { Link, useLocation } from "react-router-dom";
 
-function Header() {
+function Header({ loggedIn }) {
     const { pathname } = useLocation();
 
     const headerClassName = `header ${pathname === '/' ? 'header_promo' : ''}`;
@@ -14,7 +14,7 @@ function Header() {
             <Link to="/" className="header__logo-link">
                 <img src={logo} alt="логотип Movies Explorer" className="header__logo" />
             </Link>
-            <Navigation pathname={pathname} />
+            <Navigation loggedIn={loggedIn} />
         </header>
     );
 }

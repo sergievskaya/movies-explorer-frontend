@@ -1,8 +1,28 @@
-import React from "react";
+import { Redirect } from "react-router-dom";
 import Form from "../Form/Form";
 import './Register.css';
+import { useFormWithValidation } from '../../utils/UseFormValidation';
+import { useState } from "react";
 
-function Register() {
+function Register({ handleRegistration, loggedIn, errorMessage }) {
+
+    const { values, handleChange, errors, isValid } = useFormWithValidation();
+    const [isReqSent, setIsReqSent] = useState(false);
+
+    function handleSubmit(evt) {
+        evt.preventDefault();
+        handleRegistration({
+            name: values.name,
+            email: values.email,
+            password: values.password
+        });
+        setIsReqSent(true);
+    }
+
+    if (loggedIn) {
+        return <Redirect to="/movies"/>
+    }
+
     return (
         <Form 
             title='Добро пожаловать!'
@@ -10,44 +30,56 @@ function Register() {
             text='Уже зарегистрированы?'
             linkText='Войти'
             path='/signin'
+            handleSubmit={handleSubmit}
+            isValid={isValid}
+            errorMessage={errorMessage}
+            isReqSent={isReqSent}
         >
             <fieldset className="form__fields">
                 <div className="form__field">
                     <label className="form__label">Имя</label>
                     <input
-                        className="form__input"
+                        name="name"
+                        className={`form__input ${!errors.name ? '' : 'form__input_color-error'}`}
                         type="text"
                         required
                         placeholder="Имя"
                         minLength="2"
                         maxLength="30"
-                        defaultValue="Виталий"
+                        onChange={handleChange}
+                        value={values.name || ''}
                     />
-                    <span className="form__input-error"></span>
+                    <span className="form__input-error">{errors.name}</span>
                 </div>
+
                 <div className= "form__field">
                     <label className="form__label">E-mail</label>
                     <input
-                        className="form__input"
+                        name="email"
+                        className={`form__input ${!errors.email ? '' : 'form__input_color-error'}`}
                         type="email"
                         required
                         placeholder="E-mail"
-                        defaultValue="pochta@yandex.ru"
+                        onChange={handleChange}
+                        value={values.email || ''}
                     />
-                    <span className="form__input-error"></span>
+                    <span className="form__input-error">{errors.email}</span>
                 </div>
                 <div className= "form__field">
                     <label className="form__label">Пароль</label>
                     <input
-                        className="form__input form__input_color-error"
+                        name="password"
+                        className={`form__input ${!errors.password ? '' : 'form__input_color-error'}`}
                         type="password"
                         required
                         placeholder="Пароль"
                         minLength="6"
-                        defaultValue="12345678" 
+                        onChange={handleChange}
+                        value={values.password || ''}
                     />
-                    <span className="form__input-error">что-то пошло не так...</span>
+                    <span className="form__input-error">{errors.password}</span>
                 </div>
+
             </fieldset>
         </Form>
     );

@@ -1,14 +1,27 @@
-import React from "react";
+import { useEffect } from "react";
 import MoviesCardList from "../MoviesCardList/MoviesCardList";
 import SearchForm from "../SearchForm/SearchForm";
 import './SavedMovies.css';
-import savedMovies from "../../utils/savedMovies"
 
-function SavedMovies() {
+function SavedMovies({ cards, isLoading, handleCardDelete, isSaved, error, handleSearchMovie, initialFilterMovies }) {
+
+    useEffect(() => {
+        initialFilterMovies();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     return (
         <main className="saved-movies">
-            <SearchForm />
-            <MoviesCardList  cards={savedMovies}/>
+            <SearchForm 
+                handleSearchMovie={handleSearchMovie}
+            />
+            <MoviesCardList  
+                cards={cards}
+                isLoading={isLoading}
+                error={error}
+                handleCardDelete={handleCardDelete}
+                isSaved={isSaved}
+            />
         </main>
     );
 }
